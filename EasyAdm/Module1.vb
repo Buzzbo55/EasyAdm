@@ -41,8 +41,8 @@ Module Module1
             'Found EID/ProductID assign variable - check to see if there are any updated properties - check to see if any tasks are due
             intEid = My.Computer.Registry.GetValue("HKEY_LOCAL_MACHINE\SOFTWARE\EasyAdm", "EID", Nothing)
 
-            intErrorLevel = SetEndpointProperties("Manufacturer", strManufacturer, "System", "Hardware Information")
-            intErrorLevel = SetEndpointProperties("Model", strModel, "System", "Hardware Information")
+            intErrorLevel = SetProperty("Manufacturer", strManufacturer)
+            intErrorLevel = SetProperty("Model", strModel)
 
         End If
 
@@ -198,6 +198,30 @@ Module Module1
 
 
         End If
+
+    End Function
+    Private Function SetProperty(ByVal strPropDesc As String, ByVal strPropVal As String) As Integer
+        'examples of strPropdesc and strPropval are "Name"/"Local Area Connection", "Type"/"Network Connection", "Name"/"Microsoft Visio", and "Version"/"10.6.8"
+        Dim settings As ConnectionStringSettings
+        settings = ConfigurationManager.ConnectionStrings("EasyAdm.My.MySettings.Setting")
+        Dim cnn As New SqlConnection(settings.ConnectionString)
+        Dim cmd As New SqlCommand
+        Dim Return_Val As SqlParameter
+
+        cmd.Connection = cnn
+        cmd.CommandType = CommandType.StoredProcedure
+        cmd.CommandText = "uspEndpointProperty"
+        cmd.Parameters.AddWithValue("@propdescription", strPropDesc)
+        cmd.Parameters.AddWithValue("@propvalue", strPropVal)
+        Return_Val = cmd.Parameters.Add("Return_Val", SqlDbType.Int)
+        Return_Val.Direction = ParameterDirection.ReturnValue
+
+        Try
+            cnn.Open()
+            cmd.ExecuteScalar()
+            Return Return_Val.Value
+        Catch ex As Exception
+        End Try
 
     End Function
     Private Function SetEndpointProperties(ByVal strPropDesc As String, ByVal strPropVal As String, ByVal strCatDesc As String, ByVal strHeadDesc As String, Optional ByVal intECatPropInterval As Integer = 0, Optional ByVal intECatID As Integer = 0) As Integer
