@@ -28,18 +28,18 @@ Module Module1
         'Dim strPath As String = "D:\Users\bourquer\Desktop\Untitled3.ps1"
         'Shell("powershell.exe -file " & strPath)
         'Check Registry for CID
-        If IsNothing(My.Computer.Registry.GetValue("HKEY_LOCAL_MACHINE\SOFTWARE\theBuzz", "EID", Nothing)) Or (My.Computer.Registry.GetValue("HKEY_LOCAL_MACHINE\SOFTWARE\theBuzz", "GUID", Nothing) <> strGuid) Then
+        If IsNothing(My.Computer.Registry.GetValue("HKEY_LOCAL_MACHINE\SOFTWARE\EasyAdm", "EID", Nothing)) Or (My.Computer.Registry.GetValue("HKEY_LOCAL_MACHINE\SOFTWARE\EasyAdm", "GUID", Nothing) <> strGuid) Then
 
             'If EID/ProductID combo match not found, write ename to db and get back cid - write it to registry
             intEid = GetEID(strEname, strOS, strGuid)
 
-            My.Computer.Registry.SetValue("HKEY_LOCAL_MACHINE\SOFTWARE\theBuzz", "EID", intEid)
-            My.Computer.Registry.SetValue("HKEY_LOCAL_MACHINE\SOFTWARE\theBuzz", "GUID", strGuid)
+            My.Computer.Registry.SetValue("HKEY_LOCAL_MACHINE\SOFTWARE\EasyAdm", "EID", intEid)
+            My.Computer.Registry.SetValue("HKEY_LOCAL_MACHINE\SOFTWARE\EasyAdm", "GUID", strGuid)
 
         Else
 
             'Found EID/ProductID assign variable - check to see if there are any updated properties - check to see if any tasks are due
-            intEid = My.Computer.Registry.GetValue("HKEY_LOCAL_MACHINE\SOFTWARE\theBuzz", "EID", Nothing)
+            intEid = My.Computer.Registry.GetValue("HKEY_LOCAL_MACHINE\SOFTWARE\EasyAdm", "EID", Nothing)
 
             intErrorLevel = SetEndpointProperties("Manufacturer", strManufacturer, "System", "Hardware Information")
             intErrorLevel = SetEndpointProperties("Model", strModel, "System", "Hardware Information")
@@ -202,11 +202,11 @@ Module Module1
     End Function
     Private Function SetEndpointProperties(ByVal strPropDesc As String, ByVal strPropVal As String, ByVal strCatDesc As String, ByVal strHeadDesc As String, Optional ByVal intECatPropInterval As Integer = 0, Optional ByVal intECatID As Integer = 0) As Integer
         'examples of strPropdesc and strPropval are "Name"/"Local Area Connection", "Type"/"Network Connection", "Name"/"Microsoft Visio", and "Version"/"10.6.8"
-        'examples of strGroupDesc are "Hardware Information" and "Installed Applications"
+        'examples of strCatDesc are "Hardware Information" and "Installed Applications"
         'intECatPropInterval can be provided to set a specific number of hours to update the property - default is 0 (do not update)
         'intECatID can be provided to add to an existing EndpointCategory e.g. each Installed Application would have several properties and values so the first set (Name/Microsoft Visio) would return the intCatID which can be used to add additional sets (Version/10.6.8)
         Dim settings As ConnectionStringSettings
-        settings = ConfigurationManager.ConnectionStrings("ConsoleApplication1.My.MySettings.Setting")
+        settings = ConfigurationManager.ConnectionStrings("EasyAdm.My.MySettings.Setting")
         Dim cnn As New SqlConnection(settings.ConnectionString)
         Dim cmd As New SqlCommand
         Dim Return_Val As SqlParameter
@@ -238,7 +238,7 @@ Module Module1
 
 
     '    Dim settings As ConnectionStringSettings
-    '    settings = ConfigurationManager.ConnectionStrings("ConsoleApplication1.My.MySettings.Setting")
+    '    settings = ConfigurationManager.ConnectionStrings("EasyAdm.My.MySettings.Setting")
     '    If Not settings Is Nothing Then
 
     '        Dim sqlConnection1 As New SqlConnection(settings.ConnectionString)
