@@ -11,12 +11,13 @@ Imports System.IO
 
 
 
+
 Module Module1
 
     Public intEid As Integer
-    Public strGuid As String = My.Computer.Registry.GetValue("HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion", "ProductId", Nothing)
     Public strOS As String = My.Computer.Info.OSFullName
     Public strEname As String = My.Computer.Name
+    Public strGuid As String = GetWMIProperties("win32_OperatingSystem", "SerialNumber")
     Public strModel As String = GetWMIProperties("win32_computersystem", "model")
     Public strManufacturer As String = GetWMIProperties("win32_computersystem", "manufacturer")
     Sub Main()
@@ -119,7 +120,7 @@ Module Module1
     Private Function GetTasks(ByVal strEname As Integer) As String
 
         Dim settings As ConnectionStringSettings
-        settings = ConfigurationManager.ConnectionStrings("ConsoleApplication1.My.MySettings.Setting")
+        settings = ConfigurationManager.ConnectionStrings("EasyAdm.My.MySettings.Setting")
         Dim cnn As New SqlConnection(settings.ConnectionString)
         Dim cmd As New SqlCommand
         Dim Return_Val As SqlParameter
@@ -142,7 +143,7 @@ Module Module1
     Private Function GetEID(ByVal strEname As String, ByVal strOS As String, ByVal strGuid As String) As Integer
 
         Dim settings As ConnectionStringSettings
-        settings = ConfigurationManager.ConnectionStrings("ConsoleApplication1.My.MySettings.Setting")
+        settings = ConfigurationManager.ConnectionStrings("EasyAdm.My.MySettings.Setting")
         Dim cnn As New SqlConnection(settings.ConnectionString)
         Dim cmd As New SqlCommand
         Dim Return_Val As SqlParameter
@@ -168,7 +169,7 @@ Module Module1
 
 
         Dim settings As ConnectionStringSettings
-        settings = ConfigurationManager.ConnectionStrings("ConsoleApplication1.My.MySettings.Setting")
+        settings = ConfigurationManager.ConnectionStrings("EasyAdm.My.MySettings.Setting")
         If Not settings Is Nothing Then
 
             Dim sqlConnection1 As New SqlConnection(settings.ConnectionString)
