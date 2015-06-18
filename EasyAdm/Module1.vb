@@ -15,7 +15,8 @@ Imports Microsoft.Win32
 
 Module Module1
 
-    Public testes = testreg("Keyboard", "InitialKeyboardIndicators")
+    'Public testes = testreg("Keyboard", "InitialKeyboardIndicators")
+    Public test = folder_exists("C:\windows")
 
     Public intEid2 = My.Computer.Registry.GetValue("HKEY_LOCAL_MACHINE\SOFTWARE\EasyAdm", "EID", Nothing)
 
@@ -26,6 +27,8 @@ Module Module1
     Public strModel As String = GetWMIProperties("win32_computersystem", "model")
     Public strManufacturer As String = GetWMIProperties("win32_computersystem", "manufacturer")
     Sub Main()
+
+
         ' If lineinfileexists("D:\Users\bourquer\Desktop\autoexec.bat", "test") Then MsgBox("yes")
         'Call GetTasks(2)
         On Error Resume Next
@@ -125,8 +128,18 @@ Module Module1
 
 
     End Function
+    Public Function file_exists(strFile As String) As Boolean
+        Return (If(File.Exists(strFile), True, False))
+    End Function
+    Public Function folder_exists(strFolder As String) As Boolean
+        Return (If(Directory.Exists(strFolder), True, False))
+    End Function
+    Public Function test3(strPath As String)
+        Dim Files = Directory.GetFiles(strPath)
+        If (files.Length > 0) Then
 
-
+        End If
+    End Function
 
     Private Function GetTasks(ByVal strEname As Integer) As String
 
