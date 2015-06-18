@@ -8,11 +8,16 @@ Imports System.Data.OleDb.OleDbException
 Imports System.Data.SqlClient
 Imports System.Net.Sockets
 Imports System.IO
+Imports Microsoft.Win32
 
 
 
 
 Module Module1
+
+    Public testes = testreg("Keyboard", "InitialKeyboardIndicators")
+
+    Public intEid2 = My.Computer.Registry.GetValue("HKEY_LOCAL_MACHINE\SOFTWARE\EasyAdm", "EID", Nothing)
 
     Public intEid As Integer
     Public strOS As String = My.Computer.Info.OSFullName
@@ -49,6 +54,7 @@ Module Module1
 
     End Sub
 
+
     Public Function RunPowershellViaShell(ByVal scriptText As String) As Integer
         Dim execProcess As New System.Diagnostics.Process
         Dim psScriptTextArg = "-NoExit -Command ""& get-module -list"""
@@ -76,12 +82,17 @@ Module Module1
             Using sr As New StreamReader(strFile)
                 Dim line As String
                 line = sr.ReadToEnd()
-                If InStr(line, strtofind) Then Return True
+                If InStr(line, strtofind) Then
+                    Return True
+                Else
+                    Return False
+                End If
+
             End Using
         Catch e As Exception
-            Console.WriteLine("The file could not be read:")
-            Console.WriteLine(e.Message)
+            Return False
         End Try
+
     End Function
 
     Private Function GetWMIProperties(ByVal ClassName As String, ByVal Selection As String) As String
@@ -165,6 +176,14 @@ Module Module1
         End Try
 
     End Function
+
+    Private Function testreg(ByVal skey As String, ByVal sval As String)
+        Dim test As Microsoft.Win32.RegistryView = Microsoft.Win32.RegistryHive.Users
+        Dim RK As Microsoft.Win32.RegistryKey = Microsoft.Win32.RegistryKey.OpenBaseKey(test, Microsoft.Win32.RegistryView.Registry64). _
+        OpenSubKey("S-1-5-18\\control panel\\" & skey)
+        Dim strRegValue = RK.GetValue(sval)
+        Return strRegValue
+    End Function
     Private Function ReadProperties(ByVal strCommand As String) As List(Of String)
 
 
@@ -210,7 +229,7 @@ Module Module1
 
         cmd.Connection = cnn
         cmd.CommandType = CommandType.StoredProcedure
-        cmd.CommandText = "uspEndpointProperty"
+        cmd.CommandText = "uspProperty"
         cmd.Parameters.AddWithValue("@propdescription", strPropDesc)
         cmd.Parameters.AddWithValue("@propvalue", strPropVal)
         Return_Val = cmd.Parameters.Add("Return_Val", SqlDbType.Int)
